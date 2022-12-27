@@ -12,8 +12,10 @@ RUN git clone https://aur.archlinux.org/yay-bin.git && \
     cd yay-bin && \
     makepkg -sri --needed --noconfirm && \ 
     cd && \
-    yay -Syu --needed --noconfirm zsh nano vim vi autojump fzf trash-cli rmtrash && \
-    rm -rfv .cache yay-bin
+    yay -Syu --needed --noconfirm openssh zsh nano vim vi autojump fzf trash-cli rmtrash && \
+    rm -rfv .cache yay-bin && \
+    sudo rm -rfv /var/cache/* && \
+    yay -Scc --noconfirm
 
 USER root
 WORKDIR /
