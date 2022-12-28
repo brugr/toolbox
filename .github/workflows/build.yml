@@ -1,6 +1,8 @@
 name: Build image
 on:
   push:
+    paths:
+      - 'Containerfile'
   schedule:
     - cron: '0 0 * * *'  # every day at midnight
 env:
@@ -19,12 +21,12 @@ jobs:
     steps:
       # Checkout push-to-registry action github repository
       - name: Checkout Push to Registry action
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.6.0
 
       # Build image using Buildah action
       - name: Build Image
         id: build_image
-        uses: redhat-actions/buildah-build@v2
+        uses: redhat-actions/buildah-build@v2.10
         with:
           containerfiles: |
             ./Containerfile
@@ -34,7 +36,7 @@ jobs:
 
       # Push the image to GHCR (Image Registry)
       - name: Push To GHCR
-        uses: redhat-actions/push-to-registry@v2
+        uses: redhat-actions/push-to-registry@v2.6
         id: push
         with:
           image: ${{ steps.build_image.outputs.image }}
