@@ -1,6 +1,8 @@
 FROM docker.io/archlinux/archlinux:base-devel
 
-RUN pacman -Syu --needed --noconfirm git
+RUN pacman -Syu --needed --noconfirm git && \
+    rm -rfv /var/cache/* && \
+    pacman -Scc --noconfirm
 
 ARG user=makepkg
 RUN useradd --system --create-home $user && \
@@ -8,14 +10,14 @@ RUN useradd --system --create-home $user && \
 USER $user
 WORKDIR /home/$user
 
-RUN git clone https://aur.archlinux.org/yay-bin.git && \
-    cd yay-bin && \
+RUN git clone https://aur.archlinux.org/paru-bin.git && \
+    cd paru-bin && \
     makepkg -sri --needed --noconfirm && \ 
     cd && \
-    yay -Syu --needed --noconfirm openssh zsh nano vim vi autojump fzf trash-cli rmtrash && \
-    rm -rfv .cache yay-bin && \
+    paru -Syu --needed --noconfirm openssh zsh nano vim vi autojump fzf trash-cli rmtrash kitty-terminfo && \
+    rm -rfv .cache paru-bin && \
     sudo rm -rfv /var/cache/* && \
-    yay -Scc --noconfirm
+    paru -Scc --noconfirm
 
 USER root
 WORKDIR /
