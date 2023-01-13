@@ -3,8 +3,9 @@ on:
   push:
     paths:
       - 'Containerfile'
+      - 'extra-packages'
   schedule:
-    - cron: '0 0 * * *'  # every day at midnight
+    - cron: '0 0 * * TUE'  # every tuesday at midnight
 env:
     IMAGE_NAME: toolbox
     IMAGE_TAGS: latest ${{ github.sha }}
