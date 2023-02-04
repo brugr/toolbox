@@ -17,6 +17,10 @@ RUN apk update && \
     rm -v /extra-packages.alpine && \
     pip install pipx && rm -vrf /root/.cache
 
+# Install autojump
+COPY install-autojump.sh /
+RUN bash /install-autojump.sh && rm /install-autojump.sh
+
 
 RUN ln -fs /bin/sh /usr/bin/sh && \
     ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/docker && \
