@@ -2,9 +2,7 @@ name: Build image
 on:
   push:
     paths:
-      - 'Containerfile'
       - 'Containerfile.alpine'
-      - 'extra-packages'
       - 'extra-packages.alpine'
   schedule:
     - cron: '0 0 * * TUE'  # every tuesday at midnight
@@ -12,52 +10,14 @@ on:
   
 env:
     IMAGE_NAME: toolbox
-    IMAGE_TAGS: ${{ github.sha }}
+    IMAGE_TAGS: alpine
     IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
     REGISTRY_USER: ${{ github.actor }}
     REGISTRY_PASSWORD: ${{ github.token }}
 
 jobs:
-  build-arch:
-    name: arch
-    runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: false
-    steps:
-      # Checkout push-to-registry action github repository
-      - name: Checkout Push to Registry action
-        uses: actions/checkout@v2.6.0
-
-      # Build image using Buildah action
-      - name: Build Image
-        id: build_image
-        uses: redhat-actions/buildah-build@v2.10
-        with:
-          containerfiles: |
-            ./Containerfile
-          image: ${{ env.IMAGE_NAME }}
-          tags: latest ${{ env.IMAGE_TAGS }}
-          oci: true
-
-      # Push the image to GHCR (Image Registry)
-      - name: Push To GHCR
-        uses: redhat-actions/push-to-registry@v2.6
-        id: push
-        with:
-          image: ${{ steps.build_image.outputs.image }}
-          tags: ${{ steps.build_image.outputs.tags }}
-          registry: ${{ env.IMAGE_REGISTRY }}
-          username: ${{ env.REGISTRY_USER }}
-          password: ${{ env.REGISTRY_PASSWORD }}
-          extra-args: |
-            --disable-content-trust
-
-      - name: Echo outputs
-        run: |
-          echo "${{ toJSON(steps.push.outputs) }}"
-
-  build-alpine:
-    name: alpine
+  build:
+    name: Build and push
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
@@ -74,7 +34,7 @@ jobs:
           containerfiles: |
             ./Containerfile.alpine
           image: ${{ env.IMAGE_NAME }}
-          tags: alpine ${{ env.IMAGE_TAGS }}
+          tags: ${{ env.IMAGE_TAGS }}
           oci: true
 
       # Push the image to GHCR (Image Registry)
