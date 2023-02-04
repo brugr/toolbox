@@ -1,0 +1,26 @@
+FROM quay.io/toolbx-images/alpine-toolbox:3.17
+
+LABEL com.github.containers.toolbox="true" \
+      usage="This image is meant to be used with the toolbox command" \
+      summary="Custom image for toolbox/distrobox" \
+      maintainer="brugr <me@brugr.com>"
+
+# Download host-spawn and do some useful symlinks
+RUN curl -L "https://github.com/1player/host-spawn/releases/latest/download/host-spawn-x86_64" -o /tmp/host-spawn && \
+    mv -v /tmp/host-spawn /usr/bin && chmod -v +x /usr/bin/host-spawn
+
+# Install extra packages
+COPY extra-packages.alpine /
+RUN apk update && \
+    apk upgrade && \
+    cat /extra-packages.alpine | xargs apk add && \
+    rm -v /extra-packages.alpine && \
+    pip install pipx && rm -vrf /root/.cache
+
+
+RUN ln -fs /bin/sh /usr/bin/sh && \
+    ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/docker && \
+    ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/flatpak && \ 
+    ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/podman && \
+    ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/rpm-ostree && \
+    ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/transactional-update
